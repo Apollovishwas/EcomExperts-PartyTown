@@ -40,4 +40,95 @@ for Eg( https://partytownlib.onrender.com/shopify?shop=ecomexperts.io/)
 
   Once the app is installed and the webservice is live, partytown.js can be accessed "/a/proxy/partytown.js"
   
-  To Setup Connection and use partytown, see BoilerPlate.html for instructions. (code in the file should be pasted to theme.liquid)
+  To Setup Connection and use partytown, Use follwing code. (code should be pasted to theme.liquid)
+  
+  ### 1 : Setting up partytown 
+  
+  ```
+  <script>
+          partytown = {
+            resolveUrl(url, location) {
+
+      url.searchParams.append('shop', 'yourShopifyURL');
+      // url.searchParams.append('shop', 'partytownlib.myshopify.com');
+      const proxyUrl = new URL('yourWebServiceURL/reverse-proxy');
+      // const proxyUrl = new URL('https://partytownlib.onrender.com/reverse-proxy');
+      proxyUrl.searchParams.append('url', url.href);
+      url.searchParams.append('shop', 'yourShopifyURL');
+      // url.searchParams.append('shop', 'partytownlib.myshopify.com');
+
+            },
+            forward: ["dataLayer.push"],
+            lib:'/a/proxy/',
+            logCalls: true,
+            logGetters: true,
+            logSetters: true,
+            logImageRequests: true,
+            logMainAccess: true,
+            logSendBeaconRequests: true,
+            logStackTraces: false,
+            logScriptExecution: true
+          };
+    </script>
+  ```
+  ### 2. Checking if server is online
+  
+  ```
+   <script>
+      var uri = '/a/proxy/paratytown.js'
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET",uri,false);
+      xhr.send(null);
+      if(xhr.status == 200) {
+          //is online
+          //if its, online, we are including party town script to DOM
+        var script = document.createElement('script');
+        script.src = '/a/proxy/partytown.js';
+        document.head.appendChild(script);
+        console.log("Server is online");
+
+      }
+      else {
+          //is offline
+          console.log("Server is offline, loading GTM on main Thread");
+          //The Server is offline, Call all scripts to run on mainthread.
+      }
+    </script>
+  ```
+  
+  ### 3.1. Running Small Scripts with PartyTown ( GTM )
+  
+  ```
+   <script type="text/partytown" crossorigin="anonymous">
+            console.log("Loading GTM with party town");
+            //paste your GTM Code here. PartyTown Will handle Everything Else
+    </script>
+  ```
+  
+  ### 3.2. Running Third Party Scripts ( Jquery )
+  
+  ```
+  <script type="text/partytown">
+                    console.log("trying to load jquery");
+                    var script = document.createElement('script');
+          script.onload
+          
+          
+          //upload your Scripts to "Assets" section of your theme.Else You'll face CORS issue. Alternatively, you can upload files to webservice
+          //to "proxy/YourClientName/", But i recommend the former approach.
+          
+          
+              script.src = 'https://cdn.shopify.com/s/files/1/0715/0600/2240/t/2/assets/jquery.js';
+
+              document.head.appendChild(script);
+      script.onload = function () {
+                if (window.jQuery) {
+                // jQuery is loaded
+                console.log("jQuery Installation Verified");
+            } else {
+                // jQuery is not loaded
+                alert("Doesn't Work");
+            }
+      };
+    </script>
+  ```
